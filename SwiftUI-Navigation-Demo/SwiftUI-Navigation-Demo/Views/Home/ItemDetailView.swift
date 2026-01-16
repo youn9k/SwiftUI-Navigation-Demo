@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct ItemDetailView: View {
-  @Environment(Router.self) private var router
   let itemId: String
 
   private var item: Item? {
@@ -31,9 +30,7 @@ struct ItemDetailView: View {
       }
 
       Section {
-        Button {
-          router.push(.comments(itemId: itemId))
-        } label: {
+        NavigationButton(destination: .push(.comments(itemId: itemId))) {
           Label("댓글 보기 (\(SampleData.comments.count))", systemImage: "bubble.left")
         }
       } header: {
@@ -41,15 +38,11 @@ struct ItemDetailView: View {
       }
 
       Section {
-        Button {
-          router.select(tab: .profile)
-        } label: {
+        NavigationButton(destination: .tab(.profile)) {
           Label("Profile 탭으로 이동", systemImage: "person.fill")
         }
 
-        Button {
-          router.select(tab: .settings)
-        } label: {
+        NavigationButton(destination: .tab(.settings)) {
           Label("Settings 탭으로 이동", systemImage: "gear")
         }
       } header: {

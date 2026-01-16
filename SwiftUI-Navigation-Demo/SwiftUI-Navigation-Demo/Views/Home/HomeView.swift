@@ -1,15 +1,11 @@
 import SwiftUI
 
 struct HomeView: View {
-  @Environment(Router.self) private var router
-
   var body: some View {
     List {
       Section {
         ForEach(SampleData.items) { item in
-          Button {
-            router.push(.itemDetail(id: item.id))
-          } label: {
+          NavigationButton(destination: .push(.itemDetail(id: item.id))) {
             VStack(alignment: .leading, spacing: 4) {
               Text(item.title)
                 .font(.headline)
@@ -26,15 +22,11 @@ struct HomeView: View {
       }
 
       Section {
-        Button {
-          router.present(fullScreen: .onboarding)
-        } label: {
+        NavigationButton(destination: .fullScreen(.onboarding)) {
           Label("온보딩 보기", systemImage: "info.circle")
         }
 
-        Button {
-          router.present(fullScreen: .imageViewer(url: "sample-image"))
-        } label: {
+        NavigationButton(destination: .fullScreen(.imageViewer(url: "url"))) {
           Label("이미지 뷰어 열기", systemImage: "photo")
         }
       } header: {

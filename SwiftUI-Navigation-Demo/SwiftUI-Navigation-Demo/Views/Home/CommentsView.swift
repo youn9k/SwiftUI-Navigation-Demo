@@ -1,15 +1,12 @@
 import SwiftUI
 
 struct CommentsView: View {
-  @Environment(Router.self) private var router
   let itemId: String
 
   var body: some View {
     List {
       ForEach(SampleData.comments) { comment in
-        Button {
-          router.push(.replyDetail(commentId: comment.id))
-        } label: {
+        NavigationButton(destination: .push(.replyDetail(commentId: comment.id))) {
           VStack(alignment: .leading, spacing: 8) {
             HStack {
               Text(comment.author)
