@@ -266,9 +266,9 @@ graph TB
     end
 
     subgraph "Navigation Layer"
-        Router[Router<br/>@Observable]
+        Router["Router (@Observable)"]
         Container[NavigationContainer]
-        NavButton[NavigationButton<br/>재사용 컴포넌트]
+        NavButton["NavigationButton (재사용 컴포넌트)"]
         Dest[Destination Enums]
     end
 
@@ -329,7 +329,7 @@ sequenceDiagram
     R->>R: presentingSheet = .profileEdit
     Note over R: @Observable 변경 감지
     NC->>NC: $router.presentingSheet 변경 감지
-    NC->>NC: 새 NavigationContainer 생성<br/>(자식 Router 포함)
+    NC->>NC: 새 NavigationContainer 생성 (자식 Router 포함)
     NC->>VM: view(for: .profileEdit)
     VM->>Sheet: ProfileEditSheet() 생성
     NC->>U: Sheet 표시
@@ -340,10 +340,10 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
     participant U as User
-    participant RDV as ReplyDetailView<br/>(level 3)
-    participant CR as CommentsRouter<br/>(level 2)
-    participant HR as HomeRouter<br/>(level 1)
-    participant RR as RootRouter<br/>(level 0)
+    participant RDV as ReplyDetailView (level 3)
+    participant CR as CommentsRouter (level 2)
+    participant HR as HomeRouter (level 1)
+    participant RR as RootRouter (level 0)
     participant TV as TabView
 
     U->>RDV: "Profile 탭으로" 버튼 클릭
@@ -357,7 +357,7 @@ sequenceDiagram
     Note over RR: @Observable 변경 감지
     TV->>TV: selection 변경
     TV->>U: Profile 탭 표시
-    HR->>HR: resetContent()<br/>(스택 초기화)
+    HR->>HR: resetContent() 스택 초기화
 ```
 
 ### NavigationContainer 동작 원리
@@ -389,12 +389,12 @@ graph LR
 sequenceDiagram
     participant U as User
     participant NB as NavigationButton
-    participant R as Router<br/>(from @Environment)
+    participant R as Router (from @Environment)
     participant Dest as Destination
 
     U->>NB: 버튼 클릭
     Note over NB: destination: .push(.itemDetail("1"))
-    NB->>NB: @Environment(Router.self)로<br/>자동 Router 주입
+    NB->>NB: @Environment(Router.self)로 자동 Router 주입
     NB->>R: router.navigate(to: destination)
     R->>Dest: Destination 분기 처리
     Note over R: destination이 .push인 경우
