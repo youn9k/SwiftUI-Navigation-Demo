@@ -2,6 +2,7 @@ import SwiftUI
 
 struct OnboardingView: View {
   @Environment(\.dismiss) private var dismiss
+  @Environment(Router.self) private var router
   @State private var currentPage = 0
 
   private let pages = [
@@ -28,6 +29,7 @@ struct OnboardingView: View {
       HStack {
         Spacer()
         Button("건너뛰기") {
+          router.send(.onboardingCompleted(skipped: true))
           dismiss()
         }
         .padding()
@@ -71,6 +73,7 @@ struct OnboardingView: View {
             currentPage += 1
           }
         } else {
+          router.send(.onboardingCompleted(skipped: false))
           dismiss()
         }
       } label: {
@@ -96,4 +99,5 @@ struct OnboardingPage {
 
 #Preview {
   OnboardingView()
+    .environment(Router.previewRouter())
 }

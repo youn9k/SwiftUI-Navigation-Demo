@@ -1,8 +1,12 @@
 import SwiftUI
 
 struct SettingsView: View {
+  @Environment(Router.self) private var router
   @State private var notificationsEnabled = true
   @State private var darkModeEnabled = false
+  @State private var autoSave = true
+  @State private var dataSync = true
+  @State private var cacheSize = 50.0
 
   var body: some View {
     List {
@@ -14,7 +18,23 @@ struct SettingsView: View {
       }
 
       Section {
-        NavigationButton(destination: .sheet(.settingsDetail)) {
+        LabeledContent("자동 저장", value: autoSave ? "켜짐" : "꺼짐")
+        LabeledContent("데이터 동기화", value: dataSync ? "켜짐" : "꺼짐")
+        LabeledContent("캐시 크기", value: "\(Int(cacheSize))MB")
+      } header: {
+        Text("고급 설정 상태")
+      }
+
+      Section {
+        Button {
+          router.present(sheet: .settingsDetail) { event in
+            if case let .settingsChanged(newAutoSave, newDataSync, newCacheSize) = event {
+              autoSave = newAutoSave
+              dataSync = newDataSync
+              cacheSize = newCacheSize
+            }
+          }
+        } label: {
           Label("고급 설정", systemImage: "gearshape.2")
         }
       }

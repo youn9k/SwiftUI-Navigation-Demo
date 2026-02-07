@@ -1,6 +1,9 @@
 import SwiftUI
 
 struct HomeView: View {
+  @Environment(Router.self) private var router
+  @State private var onboardingCompleted = false
+
   var body: some View {
     List {
       Section {
@@ -22,8 +25,23 @@ struct HomeView: View {
       }
 
       Section {
-        NavigationButton(destination: .fullScreen(.onboarding)) {
-          Label("온보딩 보기", systemImage: "info.circle")
+        Button {
+          router.present(fullScreen: .onboarding) { event in
+            if case let .onboardingCompleted(skipped) = event {
+              onboardingCompleted = true
+              print("온보딩 완료 (건너뜀: \(skipped))")
+            }
+          }
+        } label: {
+          HStack {
+            Label("온보딩 보기", systemImage: "info.circle")
+            Spacer()
+            if onboardingCompleted {
+              Text("완료")
+                .font(.caption)
+                .foregroundStyle(.green)
+            }
+          }
         }
 
         NavigationButton(destination: .fullScreen(.imageViewer(url: "url"))) {

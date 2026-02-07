@@ -49,6 +49,12 @@ private struct InnerContainer<Content: View>: View {
     .fullScreenCover(item: $router.presentingFullScreen) { fullScreen in
       navigationView(for: fullScreen, from: router)
     }
+    .onChange(of: router.presentingSheet) { _, newValue in
+      if newValue == nil { router.clearEventHandler() }
+    }
+    .onChange(of: router.presentingFullScreen) { _, newValue in
+      if newValue == nil { router.clearEventHandler() }
+    }
   }
 
   @ViewBuilder

@@ -27,6 +27,12 @@ public final class Router {
   /// 현재 라우터가 활성 상태인지 추적 (추후 딥링크 적용 시 활용)
   private(set) var isActive: Bool = false
 
+  /// 자식 화면에서 보낸 이벤트를 처리하는 핸들러
+  ///
+  /// - Sheet/FullScreen: 부모 라우터에 핸들러를 설정하면 자식 라우터의 `send()`가 부모로 전파
+  /// - Push: 같은 라우터에 핸들러를 설정하면 `send()`가 로컬 핸들러를 호출
+  var eventHandler: ((NavigationEvent) -> Void)?
+
   public init(level: Int) {
     self.level = level
     self.parent = nil
@@ -99,8 +105,26 @@ public extension Router {
     navigationStackPath.append(destination)
   }
 
+  /// Push 네비게이션 + 이벤트 핸들러 등록
+  ///
+  /// Push된 화면에서 `router.send(.someEvent)`를 호출하면 핸들러가 실행됩니다.
+  /// Push된 화면과 현재 화면은 같은 Router를 공유하므로 로컬 핸들러로 처리됩니다.
+  func push(_ destination: PushDestination, onEvent handler: @escaping (NavigationEvent) -> Void) {
+    eventHandler = handler
+    navigationStackPath.append(destination)
+  }
+
   /// Sheet 표시
   func present(sheet destination: SheetDestination) {
+    presentingSheet = destination
+  }
+
+  /// Sheet 표시 + 이벤트 핸들러 등록
+  ///
+  /// Sheet 화면에서 `router.send(.someEvent)`를 호출하면 핸들러가 실행됩니다.
+  /// Sheet는 별도의 자식 Router를 갖고, 이벤트는 부모 Router로 전파됩니다.
+  func present(sheet destination: SheetDestination, onEvent handler: @escaping (NavigationEvent) -> Void) {
+    eventHandler = handler
     presentingSheet = destination
   }
 
@@ -109,8 +133,39 @@ public extension Router {
     presentingFullScreen = destination
   }
 
+  /// FullScreen 표시 + 이벤트 핸들러 등록
+  ///
+  /// FullScreen 화면에서 `router.send(.someEvent)`를 호출하면 핸들러가 실행됩니다.
+  /// FullScreen은 별도의 자식 Router를 갖고, 이벤트는 부모 Router로 전파됩니다.
+  func present(fullScreen destination: FullScreenDestination, onEvent handler: @escaping (NavigationEvent) -> Void) {
+    eventHandler = handler
+    presentingFullScreen = destination
+  }
+
   /// 루트로 돌아가기
   func popToRoot() {
     navigationStackPath.removeAll()
+  }
+}
+
+// MARK: - Event Handling
+
+public extension Router {
+  /// 이벤트를 부모 화면으로 전송
+  ///
+  /// 이벤트 전파 순서:
+  /// 1. 현재 라우터의 eventHandler 확인 (Push 네비게이션 시 같은 라우터를 공유)
+  /// 2. 없으면 부모 라우터로 전파 (Sheet/FullScreen 시 별도 자식 라우터 사용)
+  func send(_ event: NavigationEvent) {
+    if let handler = eventHandler {
+      handler(event)
+    } else {
+      parent?.send(event)
+    }
+  }
+
+  /// 이벤트 핸들러 해제
+  func clearEventHandler() {
+    eventHandler = nil
   }
 }

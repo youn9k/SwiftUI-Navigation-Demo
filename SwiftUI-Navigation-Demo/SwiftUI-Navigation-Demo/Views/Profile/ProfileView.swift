@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct ProfileView: View {
+  @Environment(Router.self) private var router
+  @State private var name = "홍길동"
+  @State private var email = "hong@example.com"
+
   var body: some View {
     List {
       Section {
@@ -10,11 +14,11 @@ struct ProfileView: View {
             .foregroundStyle(.blue)
 
           VStack(alignment: .leading, spacing: 4) {
-            Text("홍길동")
+            Text(name)
               .font(.title2)
               .fontWeight(.bold)
 
-            Text("hong@example.com")
+            Text(email)
               .font(.subheadline)
               .foregroundStyle(.secondary)
           }
@@ -24,8 +28,8 @@ struct ProfileView: View {
       }
 
       Section {
-        LabeledContent("이름", value: "홍길동")
-        LabeledContent("이메일", value: "hong@example.com")
+        LabeledContent("이름", value: name)
+        LabeledContent("이메일", value: email)
         LabeledContent("전화번호", value: "010-1234-5678")
         LabeledContent("가입일", value: "2024.01.01")
       } header: {
@@ -33,7 +37,14 @@ struct ProfileView: View {
       }
 
       Section {
-        NavigationButton(destination: .sheet(.profileEdit)) {
+        Button {
+          router.present(sheet: .profileEdit) { event in
+            if case let .profileUpdated(newName, newEmail) = event {
+              name = newName
+              email = newEmail
+            }
+          }
+        } label: {
           Label("프로필 편집", systemImage: "pencil")
         }
       }
