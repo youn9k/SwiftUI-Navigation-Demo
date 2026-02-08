@@ -22,6 +22,7 @@ public enum PushDestination: Hashable {
   case itemDetail(id: String) // Push 1: Home → 아이템 상세
   case comments(itemId: String) // Push 2: 아이템 상세 → 코멘트 목록
   case replyDetail(commentId: String) // Push 3: 코멘트 목록 → 답글 상세
+  case custom(id: String) // 임시 커스텀 뷰 (실제 뷰는 Router에 저장)
 }
 
 // MARK: - Sheet Destination

@@ -40,7 +40,11 @@ private struct InnerContainer<Content: View>: View {
     NavigationStack(path: $router.navigationStackPath) {
       content()
         .navigationDestination(for: PushDestination.self) { destination in
-          destination.view
+          if case let .custom(id) = destination, let customView = router.customPushViews[id] {
+            customView
+          } else {
+            destination.view
+          }
         }
     }
     .sheet(item: $router.presentingSheet) { sheet in

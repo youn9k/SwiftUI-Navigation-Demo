@@ -33,6 +33,11 @@ public final class Router {
   /// - Push: 같은 라우터에 핸들러를 설정하면 `send()`가 로컬 핸들러를 호출
   var eventHandler: ((NavigationEvent) -> Void)?
 
+  /// 커스텀 Push 뷰 저장소 (id → AnyView)
+  /// `push(id:view:)`로 등록된 임시 뷰를 저장
+  @ObservationIgnored
+  var customPushViews: [String: AnyView] = [:]
+
   public init(level: Int) {
     self.level = level
     self.parent = nil
@@ -112,6 +117,30 @@ public extension Router {
   func push(_ destination: PushDestination, onEvent handler: @escaping (NavigationEvent) -> Void) {
     eventHandler = handler
     navigationStackPath.append(destination)
+  }
+
+  /// 커스텀 뷰를 직접 Push
+  ///
+  /// Destination enum에 등록하지 않고 임시로 뷰를 Push할 때 사용합니다.
+  /// ```swift
+  /// router.push(id: "preview") {
+  ///     SomeCustomView(data: myData)
+  /// }
+  /// ```
+  func push<V: View>(id: String = UUID().uuidString, @ViewBuilder view: () -> V) {
+    customPushViews[id] = AnyView(view())
+    navigationStackPath.append(.custom(id: id))
+  }
+
+  /// 커스텀 뷰를 직접 Push + 이벤트 핸들러 등록
+  func push<V: View>(
+    id: String = UUID().uuidString,
+    @ViewBuilder view: () -> V,
+    onEvent handler: @escaping (NavigationEvent) -> Void
+  ) {
+    customPushViews[id] = AnyView(view())
+    eventHandler = handler
+    navigationStackPath.append(.custom(id: id))
   }
 
   /// Sheet 표시

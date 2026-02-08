@@ -15,6 +15,11 @@ public extension PushDestination {
 
     case let .replyDetail(commentId):
       ReplyDetailView(commentId: commentId)
+
+    case .custom:
+      // 커스텀 뷰는 NavigationContainer에서 Router를 통해 직접 해석됩니다.
+      // 이 분기는 실행되지 않지만, 컴파일러 exhaustive check를 위해 필요합니다.
+      EmptyView()
     }
   }
 }
