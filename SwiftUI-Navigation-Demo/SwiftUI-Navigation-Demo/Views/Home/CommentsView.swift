@@ -2,11 +2,14 @@ import SwiftUI
 
 struct CommentsView: View {
   let itemId: String
+  let onReplyTapped: (String) -> Void
 
   var body: some View {
     List {
       ForEach(SampleData.comments) { comment in
-        NavigationButton(destination: .push(.replyDetail(commentId: comment.id))) {
+        Button {
+          onReplyTapped(comment.id)
+        } label: {
           VStack(alignment: .leading, spacing: 8) {
             HStack {
               Text(comment.author)
@@ -37,7 +40,9 @@ struct CommentsView: View {
 
 #Preview {
   NavigationStack {
-    CommentsView(itemId: "1")
-      .environment(Router.previewRouter())
+    CommentsView(
+      itemId: "1",
+      onReplyTapped: { _ in }
+    )
   }
 }

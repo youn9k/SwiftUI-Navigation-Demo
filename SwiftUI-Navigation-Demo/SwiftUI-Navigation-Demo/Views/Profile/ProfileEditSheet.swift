@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct ProfileEditSheet: View {
+  let onSave: (String) -> Void
+
   @Environment(\.dismiss) private var dismiss
   @State private var name = "홍길동"
   @State private var email = "hong@example.com"
@@ -22,7 +24,7 @@ struct ProfileEditSheet: View {
 
         Section {
           Button("저장") {
-            // 저장 로직
+            onSave(name)
             dismiss()
           }
           .frame(maxWidth: .infinity)
@@ -43,5 +45,5 @@ struct ProfileEditSheet: View {
 }
 
 #Preview {
-  ProfileEditSheet()
+  ProfileEditSheet(onSave: { _ in })
 }

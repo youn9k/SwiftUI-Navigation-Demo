@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SettingsView: View {
+  let onShowDetail: () -> Void
+
   @State private var notificationsEnabled = true
   @State private var darkModeEnabled = false
 
@@ -14,7 +16,9 @@ struct SettingsView: View {
       }
 
       Section {
-        NavigationButton(destination: .sheet(.settingsDetail)) {
+        Button {
+          onShowDetail()
+        } label: {
           Label("고급 설정", systemImage: "gearshape.2")
         }
       }
@@ -41,7 +45,6 @@ struct SettingsView: View {
 
 #Preview {
   NavigationStack {
-    SettingsView()
-      .environment(Router.previewRouter())
+    SettingsView(onShowDetail: {})
   }
 }

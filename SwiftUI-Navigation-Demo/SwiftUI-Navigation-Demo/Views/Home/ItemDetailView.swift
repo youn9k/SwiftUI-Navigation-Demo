@@ -2,6 +2,9 @@ import SwiftUI
 
 struct ItemDetailView: View {
   let itemId: String
+  let onOpenComments: (String) -> Void
+  let onSwitchToProfile: () -> Void
+  let onSwitchToSettings: () -> Void
 
   private var item: Item? {
     SampleData.item(byId: itemId)
@@ -30,7 +33,9 @@ struct ItemDetailView: View {
       }
 
       Section {
-        NavigationButton(destination: .push(.comments(itemId: itemId))) {
+        Button {
+          onOpenComments(itemId)
+        } label: {
           Label("댓글 보기 (\(SampleData.comments.count))", systemImage: "bubble.left")
         }
       } header: {
@@ -38,11 +43,15 @@ struct ItemDetailView: View {
       }
 
       Section {
-        NavigationButton(destination: .tab(.profile)) {
+        Button {
+          onSwitchToProfile()
+        } label: {
           Label("Profile 탭으로 이동", systemImage: "person.fill")
         }
 
-        NavigationButton(destination: .tab(.settings)) {
+        Button {
+          onSwitchToSettings()
+        } label: {
           Label("Settings 탭으로 이동", systemImage: "gear")
         }
       } header: {
@@ -56,7 +65,11 @@ struct ItemDetailView: View {
 
 #Preview {
   NavigationStack {
-    ItemDetailView(itemId: "1")
-      .environment(Router.previewRouter())
+    ItemDetailView(
+      itemId: "1",
+      onOpenComments: { _ in },
+      onSwitchToProfile: {},
+      onSwitchToSettings: {}
+    )
   }
 }

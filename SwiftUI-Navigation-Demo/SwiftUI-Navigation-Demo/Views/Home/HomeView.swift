@@ -1,11 +1,17 @@
 import SwiftUI
 
 struct HomeView: View {
+  let onItemTapped: (String) -> Void
+  let onOpenOnboarding: () -> Void
+  let onOpenImageViewer: (String) -> Void
+
   var body: some View {
     List {
       Section {
         ForEach(SampleData.items) { item in
-          NavigationButton(destination: .push(.itemDetail(id: item.id))) {
+          Button {
+            onItemTapped(item.id)
+          } label: {
             VStack(alignment: .leading, spacing: 4) {
               Text(item.title)
                 .font(.headline)
@@ -22,11 +28,15 @@ struct HomeView: View {
       }
 
       Section {
-        NavigationButton(destination: .fullScreen(.onboarding)) {
+        Button {
+          onOpenOnboarding()
+        } label: {
           Label("온보딩 보기", systemImage: "info.circle")
         }
 
-        NavigationButton(destination: .fullScreen(.imageViewer(url: "url"))) {
+        Button {
+          onOpenImageViewer("url")
+        } label: {
           Label("이미지 뷰어 열기", systemImage: "photo")
         }
       } header: {
@@ -39,7 +49,10 @@ struct HomeView: View {
 
 #Preview {
   NavigationStack {
-    HomeView()
-      .environment(Router.previewRouter())
+    HomeView(
+      onItemTapped: { _ in },
+      onOpenOnboarding: {},
+      onOpenImageViewer: { _ in }
+    )
   }
 }

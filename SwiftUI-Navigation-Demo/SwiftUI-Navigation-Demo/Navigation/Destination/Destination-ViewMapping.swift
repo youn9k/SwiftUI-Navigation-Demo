@@ -1,52 +1,28 @@
 import SwiftUI
 
+// ViewBuilder를 통한 뷰 생성으로 완전 교체
+// 이 파일은 더 이상 Feature View를 직접 import하지 않음
+
 // MARK: - Push Destination
 
 public extension PushDestination {
-  /// Push 네비게이션 목적지를 뷰로 매핑하는 전역 함수
-  @ViewBuilder
-  var view: some View {
-    switch self {
-    case let .itemDetail(id):
-      ItemDetailView(itemId: id)
-
-    case let .comments(itemId):
-      CommentsView(itemId: itemId)
-
-    case let .replyDetail(commentId):
-      ReplyDetailView(commentId: commentId)
-    }
+  func view(navigate: @escaping (Destination) -> Void, builder: ViewBuilder) -> AnyView {
+    builder.makeView(for: self, navigate: navigate)
   }
 }
 
 // MARK: - Sheet Destination
 
 public extension SheetDestination {
-  /// Sheet 목적지를 뷰로 매핑하는 전역 함수
-  @ViewBuilder
-  var view: some View {
-    switch self {
-    case .profileEdit:
-      ProfileEditSheet()
-
-    case .settingsDetail:
-      SettingsDetailSheet()
-    }
+  func view(navigate: @escaping (Destination) -> Void, builder: ViewBuilder) -> AnyView {
+    builder.makeView(for: self, navigate: navigate)
   }
 }
 
 // MARK: - FullScreen Destination
 
 public extension FullScreenDestination {
-  /// FullScreen 목적지를 뷰로 매핑하는 전역 함수
-  @ViewBuilder
-  var view: some View {
-    switch self {
-    case .onboarding:
-      OnboardingView()
-
-    case let .imageViewer(url):
-      ImageViewerView(imageUrl: url)
-    }
+  func view(navigate: @escaping (Destination) -> Void, builder: ViewBuilder) -> AnyView {
+    builder.makeView(for: self, navigate: navigate)
   }
 }

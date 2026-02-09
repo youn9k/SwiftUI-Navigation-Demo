@@ -81,6 +81,8 @@ public extension Router {
       present(sheet: destination)
     case let .fullScreen(destination):
       present(fullScreen: destination)
+    case .popToRoot:
+      popToRoot()
     }
   }
 

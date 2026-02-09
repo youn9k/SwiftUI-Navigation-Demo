@@ -4,22 +4,26 @@ import SwiftUI
 /// NavigationContainer 자체가 Router를 소유 및 생명주기를 관리
 public struct NavigationContainer<Content: View>: View {
   @State var router: Router
-  @ViewBuilder var content: () -> Content
+  let viewBuilder: ViewBuilder
+  @ViewBuilder var content: (_ navigate: @escaping (Destination) -> Void) -> Content
 
   public init(
     parentRouter: Router,
     tab: TabDestination? = nil,
-    @ViewBuilder content: @escaping () -> Content
+    viewBuilder: ViewBuilder,
+    @ViewBuilder content: @escaping (_ navigate: @escaping (Destination) -> Void) -> Content
   ) {
     self._router = .init(initialValue: parentRouter.childRouter(for: tab))
+    self.viewBuilder = viewBuilder
     self.content = content
   }
 
   public var body: some View {
-    InnerContainer(router: router) {
-      content()
+    InnerContainer(router: router, viewBuilder: viewBuilder) {
+      content { destination in
+        router.navigate(to: destination)
+      }
     }
-    .environment(router)
     .onAppear(perform: router.setActive)
     .onDisappear(perform: router.setInactive)
   }
@@ -34,36 +38,40 @@ public struct NavigationContainer<Content: View>: View {
 /// - 별도 타입으로 분리하면 NavigationContainer<X>의 X를 독립적으로 추론 가능
 private struct InnerContainer<Content: View>: View {
   @Bindable var router: Router
+  let viewBuilder: ViewBuilder
   @ViewBuilder var content: () -> Content
 
   var body: some View {
     NavigationStack(path: $router.navigationStackPath) {
       content()
         .navigationDestination(for: PushDestination.self) { destination in
-          destination.view
+          destination.view(navigate: { router.navigate(to: $0) }, builder: viewBuilder)
         }
     }
     .sheet(item: $router.presentingSheet) { sheet in
-      navigationView(for: sheet, from: router)
+      NavigationContainer(
+        parentRouter: router,
+        viewBuilder: viewBuilder
+      ) { navigate in
+        sheet.view(navigate: navigate, builder: viewBuilder)
+      }
     }
     .fullScreenCover(item: $router.presentingFullScreen) { fullScreen in
-      navigationView(for: fullScreen, from: router)
+      NavigationContainer(
+        parentRouter: router,
+        viewBuilder: viewBuilder
+      ) { navigate in
+        fullScreen.view(navigate: navigate, builder: viewBuilder)
+      }
     }
-  }
-
-  @ViewBuilder
-  func navigationView(for destination: SheetDestination, from router: Router) -> some View {
-    NavigationContainer(parentRouter: router) { destination.view }
-  }
-
-  @ViewBuilder
-  func navigationView(for destination: FullScreenDestination, from router: Router) -> some View {
-    NavigationContainer(parentRouter: router) { destination.view }
   }
 }
 
 #Preview {
-  NavigationContainer(parentRouter: .previewRouter()) {
+  NavigationContainer(
+    parentRouter: .previewRouter(),
+    viewBuilder: AppViewFactory()
+  ) { _ in
     Text("Hello")
   }
 }

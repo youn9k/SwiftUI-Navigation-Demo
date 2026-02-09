@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct ReplyDetailView: View {
-  @Environment(Router.self) private var router
   let commentId: String
+  let onPopToRoot: () -> Void
 
   private var comment: Comment? {
     SampleData.comment(byId: commentId)
@@ -65,7 +65,7 @@ struct ReplyDetailView: View {
 
       Section {
         Button {
-          router.popToRoot()
+          onPopToRoot()
         } label: {
           Label("Home으로 돌아가기", systemImage: "house.fill")
         }
@@ -78,7 +78,9 @@ struct ReplyDetailView: View {
 
 #Preview {
   NavigationStack {
-    ReplyDetailView(commentId: "1")
-      .environment(Router.previewRouter())
+    ReplyDetailView(
+      commentId: "1",
+      onPopToRoot: {}
+    )
   }
 }
